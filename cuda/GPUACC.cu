@@ -24,10 +24,11 @@ __global__ void MatrixMulKernel(float* Md, float* Nd, float* Pd, int Width)
 	//Pvalue stores the Pd element that is computed by the thread
 	float Pvalue = 0;
 
-	for (int k = 0; k < Width; ++k)
+	for (int k = 0; k < Width; k++)
 	{
 		float Mdelement = Md[ty * Width + k];
 		float Ndelement = Nd[k * Width + tx];
+		//printf("ÁÂÇ¥ : %d, %d\n", ty * Width + k, k * Width + tx);
 		Pvalue += Mdelement * Ndelement;
 	}
 
@@ -54,15 +55,15 @@ void GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
 
 	//Kernel invocation code - to be shown later
 	//Setup the executioin configuration
-	dim3 dimBlock(Width, Width);
 	dim3 dimGrid(1, 1);
+	dim3 dimBlock(Width, Width);
 
 	//Launch the device computation threads!
-	MatrixMulKernel <<<dimBlock, dimGrid>>> (Md, Nd, Pd, Width);
+	MatrixMulKernel<<<dimGrid, dimBlock >>> (Md, Nd, Pd, Width);
 
 
 	//Transfer P from device to host
-	//cudaMemcpy(P, Pd, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy(P, Pd, size, cudaMemcpyDeviceToHost);
 	//Free dvice matrices
 	cudaFree(Md); cudaFree(Nd); cudaFree(Pd);
 }
