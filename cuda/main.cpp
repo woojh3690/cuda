@@ -5,7 +5,7 @@ void matrixPrint(float* data, int width);
 
 int main(int argc, char* argv[])
 {
-	std::cout << "hello Cuda!" << std::endl;
+	std::cout << "Hello Cuda!" << std::endl;
 
 	int Width = 10;
 	int size = Width * Width * sizeof(float);
