@@ -1,6 +1,6 @@
 #include "GPUACC.cuh"
 
-#define TILE_WIDTH 25
+#define TILE_WIDTH 5
 
 GPUACC::GPUACC(void)
 {

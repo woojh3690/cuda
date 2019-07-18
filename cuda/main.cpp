@@ -5,9 +5,9 @@ void matrixPrint(float* data, int width);
 
 int main(int argc, char* argv[])
 {
-	std::cout << "hello world" << std::endl;
+	std::cout << "hello Cuda!" << std::endl;
 
-	int Width = 50;
+	int Width = 10;
 	int size = Width * Width * sizeof(float);
 	float* aM = (float*)malloc(size);
 	float* aN = (float*)malloc(size);
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
 	//ÃÊ±âÈ­
 	srand((unsigned int)time(NULL));
-	int max = 3;
+	int max = 10;
 	for (int i = 0; i < Width * Width; i++)
 	{
 		aM[i] = (rand() % max);
