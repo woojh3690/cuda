@@ -23,10 +23,16 @@
     <CudaCompile Include="GPUACC.cu">
       <Filter>소스 파일</Filter>
     </CudaCompile>
+    <CudaCompile Include="GPUACC.cuh">
+      <Filter>헤더 파일</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="GPUACC.cuh">
+    <ClInclude Include="test.cuh">
       <Filter>헤더 파일</Filter>
-    </CustomBuild>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

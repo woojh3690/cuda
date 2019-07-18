@@ -1,9 +1,6 @@
 #include "GPUACC.cuh"
-#include "cuda.h"
-#include <cufft.h>
-#include "cublas_v2.h"
-#include <stdio.h>
-#include <stdlib.h>
+
+#define TILE_WIDTH 25
 
 GPUACC::GPUACC(void)
 {
@@ -17,23 +14,51 @@ GPUACC::~GPUACC(void)
 
 __global__ void MatrixMulKernel(float* Md, float* Nd, float* Pd, int Width)
 {
-	//2D Thread ID
-	int tx = threadIdx.x;
-	int ty = threadIdx.y;
+	__shared__ float Mds[TILE_WIDTH][TILE_WIDTH];
+	__shared__ float Nds[TILE_WIDTH][TILE_WIDTH];
 
-	//Pvalue stores the Pd element that is computed by the thread
+	int bx = blockIdx.x; int by = blockIdx.y;
+	int tx = threadIdx.x; int ty = threadIdx.y;
+
+	//Identify the row and column of the Pd element to work on
+	int Row = by * TILE_WIDTH + ty;
+	int Col = bx * TILE_WIDTH + tx;
+
+	//printf("Row : %d,  Col : %d\n", Row, Col);
+
 	float Pvalue = 0;
-
-	for (int k = 0; k < Width; k++)
+	//Loop over the Md and Nd tiles required to compute the Pd element
+	for (int m = 0; m < Width / TILE_WIDTH; m++)
 	{
-		float Mdelement = Md[ty * Width + k];
-		float Ndelement = Nd[k * Width + tx];
-		//printf("ÁÂÇ¥ : %d, %d\n", ty * Width + k, k * Width + tx);
-		Pvalue += Mdelement * Ndelement;
+		//Collaborative loading of Md and Nd tiles into shared memory
+		Mds[ty][tx] = Md[Row * Width + (m * TILE_WIDTH + tx)];
+		Nds[ty][tx] = Nd[(m * TILE_WIDTH + ty) * Width + Col];
+		__syncthreads();
+
+		for (int k = 0; k < TILE_WIDTH; k++)
+			Pvalue += Mds[ty][k] * Nds[k][tx];
+		__syncthreads();
 	}
 
-	//Write the matrix to device memory each thread writes one element
-	Pd[ty * Width + tx] = Pvalue;
+	Pd[Row * Width + Col] = Pvalue;
+
+	////2D Thread ID
+	//int tx = threadIdx.x;
+	//int ty = threadIdx.y;
+
+	////Pvalue stores the Pd element that is computed by the thread
+	//float Pvalue = 0;
+
+	//for (int k = 0; k < Width; k++)
+	//{
+	//	float Mdelement = Md[ty * Width + k];
+	//	float Ndelement = Nd[k * Width + tx];
+	//	//printf("ÁÂÇ¥ : %d, %d\n", ty * Width + k, k * Width + tx);
+	//	Pvalue += Mdelement * Ndelement;
+	//}
+
+	////Write the matrix to device memory each thread writes one element
+	//Pd[ty * Width + tx] = Pvalue;
 }
 
 void GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
@@ -55,11 +80,11 @@ void GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
 
 	//Kernel invocation code - to be shown later
 	//Setup the executioin configuration
-	dim3 dimGrid(1, 1);
-	dim3 dimBlock(Width, Width);
+	dim3 dimGrid(2, 2);
+	dim3 dimBlock(TILE_WIDTH, TILE_WIDTH);
 
 	//Launch the device computation threads!
-	MatrixMulKernel<<<dimGrid, dimBlock >>> (Md, Nd, Pd, Width);
+	MatrixMulKernel <<<dimGrid,dimBlock>>> (Md, Nd, Pd, Width);
 
 
 	//Transfer P from device to host

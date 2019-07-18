@@ -1,23 +1,25 @@
 #include <iostream>
+#include <ctime>
 #include "GPUACC.cuh"
-
 void matrixPrint(float* data, int width);
 
 int main(int argc, char* argv[])
 {
 	std::cout << "hello world" << std::endl;
 
-	int Width = 20;
+	int Width = 50;
 	int size = Width * Width * sizeof(float);
 	float* aM = (float*)malloc(size);
 	float* aN = (float*)malloc(size);
 	float* aP = (float*)malloc(size);
 
 	//초기화
+	srand((unsigned int)time(NULL));
+	int max = 3;
 	for (int i = 0; i < Width * Width; i++)
 	{
-		aM[i] = i+1;
-		aN[i] = i+ Width * Width+ 1;
+		aM[i] = (rand() % max);
+		aN[i] = (rand() % max);
 	}
 
 	//출력
