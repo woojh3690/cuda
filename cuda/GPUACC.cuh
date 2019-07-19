@@ -7,6 +7,8 @@
 #include <device_functions.h>
 #include <cuda_runtime_api.h>
 
+#include <time.h>
+
 #define __syncthreads()
 #ifdef __cplusplus 
 extern "C" {//<-- extern 시작
@@ -17,7 +19,7 @@ extern "C" {//<-- extern 시작
 	public:
 		GPUACC(void);
 		virtual ~GPUACC(void);
-		void MatrixMultiplication(float* M, float* N, float* P, int Width);
+		double MatrixMultiplication(float* M, float* N, float* P, int Width);
 	};
 	
 #ifdef __cplusplus 

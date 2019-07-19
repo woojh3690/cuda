@@ -1,6 +1,6 @@
 #include "GPUACC.cuh"
 
-#define TILE_WIDTH 5
+#define TILE_WIDTH 7
 
 GPUACC::GPUACC(void)
 {
@@ -41,27 +41,9 @@ __global__ void MatrixMulKernel(float* Md, float* Nd, float* Pd, int Width)
 	}
 
 	Pd[Row * Width + Col] = Pvalue;
-
-	////2D Thread ID
-	//int tx = threadIdx.x;
-	//int ty = threadIdx.y;
-
-	////Pvalue stores the Pd element that is computed by the thread
-	//float Pvalue = 0;
-
-	//for (int k = 0; k < Width; k++)
-	//{
-	//	float Mdelement = Md[ty * Width + k];
-	//	float Ndelement = Nd[k * Width + tx];
-	//	//printf("ÁÂÇ¥ : %d, %d\n", ty * Width + k, k * Width + tx);
-	//	Pvalue += Mdelement * Ndelement;
-	//}
-
-	////Write the matrix to device memory each thread writes one element
-	//Pd[ty * Width + tx] = Pvalue;
 }
 
-void GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
+double GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
 {
 
 	int size = Width * Width * sizeof(float);
@@ -80,15 +62,20 @@ void GPUACC::MatrixMultiplication(float* M, float* N, float* P, int Width)
 
 	//Kernel invocation code - to be shown later
 	//Setup the executioin configuration
-	dim3 dimGrid(2, 2);
+	dim3 dimGrid(3, 3);
 	dim3 dimBlock(TILE_WIDTH, TILE_WIDTH);
 
 	//Launch the device computation threads!
-	MatrixMulKernel <<<dimGrid,dimBlock>>> (Md, Nd, Pd, Width);
-
+	clock_t start = clock();
+	for (int i = 0; i < 1000; i++) {
+		MatrixMulKernel <<<dimGrid, dimBlock >>> (Md, Nd, Pd, Width);
+	}
+	clock_t end = clock();
 
 	//Transfer P from device to host
 	cudaMemcpy(P, Pd, size, cudaMemcpyDeviceToHost);
 	//Free dvice matrices
 	cudaFree(Md); cudaFree(Nd); cudaFree(Pd);
+
+	return (double)end - start;
 }
