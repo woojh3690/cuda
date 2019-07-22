@@ -6,10 +6,13 @@
 void matrixPrint(float* data, int width);
 float randomDouble(void);
 void matrixCalulatorToCpu(float* Md, float* Nd, float* Pd, int Width);
+void spec();
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Hello Cuda!" << std::endl;
+	//spec();
+	
+	std::cout << "Hello Cuda!" << std::endl;7
 
 	int Width = 21;
 	int size = Width * Width * sizeof(float);
@@ -40,7 +43,7 @@ int main(int argc, char* argv[])
 	}
 	clock_t end = clock();
 	matrixPrint(aP, Width);
-	std::cout << "cpu 걸린 시간 : " << (double) end - start << std::endl;
+	std::cout << "cpu 걸린 시간 : " << (double)end - start << std::endl;
 
 	aP = (float*)malloc(size);
 
@@ -48,7 +51,7 @@ int main(int argc, char* argv[])
 	double time = gpuacc.MatrixMultiplication(aM, aN, aP, Width);
 	matrixPrint(aP, Width);
 	std::cout << "gpu 걸린 시간 : " << time << std::endl;
-
+	
 	return 0;
 }
 
@@ -84,4 +87,40 @@ void matrixCalulatorToCpu(float* Md, float* Nd, float* Pd, int Width)
 			Pd[i * Width + j] = sum;
 		}
 	}
+}
+
+void spec()
+{
+	cudaDeviceProp prop;
+	int count; cudaGetDeviceCount(&count);
+	for (int i = 0; i < count; i++) {
+		cudaGetDeviceProperties(&prop, i); 
+		printf("--- General Information for device %d ---\n", i); 
+		printf("Name : %s\n", prop.name); 
+		printf("Compute capability : %d.%d\n", prop.major, prop.minor);
+		printf("clock rate : %d\n", prop.clockRate);
+		printf("device copy overlap : "); 
+		if (prop.deviceOverlap) 
+			printf("enabled\n"); 
+		else printf("Disabled\n"); 
+		printf("Kernel execition timeout : "); 
+		if (prop.kernelExecTimeoutEnabled) 
+			printf("Enabled\n"); 
+		else printf("Disabled\n");
+		printf("--- Memory Information for device %d ---\n", i);
+		printf("total global mem : %ld\n", prop.totalGlobalMem); 
+		printf("Total constant mem : %ld\n", prop.totalConstMem);
+		printf("Max mem pitch : %ld\n", prop.memPitch); 
+		printf("Texture Alignment : %ld\n", prop.textureAlignment); 
+		printf("--- MP Information for device %d ---\n", i);
+		printf("Multiprocessor count : %d\n", prop.multiProcessorCount); 
+		printf("Shared mem per mp : %ld\n", prop.sharedMemPerBlock);
+		printf("Registers per mp : %d\n", prop.regsPerBlock);
+		printf("Threads in warp : %d\n", prop.warpSize);
+		printf("Max threads per block : %d\n", prop.maxThreadsPerBlock); 
+		printf("Max thread dimensions : (%d, %d, %d)\n", prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
+		printf("Max grid imensions : (%d, %d, %d)\n", prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]); 
+		printf("\n");
+	}
+
 }

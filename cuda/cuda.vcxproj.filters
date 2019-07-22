@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="병렬 구조 변경">
+      <UniqueIdentifier>{d43a97c6-2d74-4b10-b6d1-eb118d0958d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -28,11 +31,11 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.cuh">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
+    <ClInclude Include="loop split.cuh">
+      <Filter>병렬 구조 변경</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

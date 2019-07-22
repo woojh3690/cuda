@@ -149,7 +149,7 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.cuh" />
+    <ClInclude Include="loop split.cuh" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
