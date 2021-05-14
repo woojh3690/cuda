@@ -12,9 +12,9 @@ int main(int argc, char* argv[])
 {
 	//spec();
 	
-	std::cout << "Hello Cuda!" << std::endl;7
+	std::cout << "Hello Cuda!" << std::endl;
 
-	int Width = 21;
+	int Width = 20;
 	int size = Width * Width * sizeof(float);
 	float* aM = (float*)malloc(size);
 	float* aN = (float*)malloc(size);
